@@ -32,7 +32,7 @@ function App() {
 
   useEffect(() => {
     getMessages()
-  })
+  }, [])
 
   async function login() {
     if (!sdkRef.current) {
