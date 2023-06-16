@@ -31,20 +31,20 @@ function App() {
   }, [interval])
 
   useEffect(() => {
-    if (provider) {
-      getMessages()
-    }
-  }, [provider])
+    getMessages()
+  })
 
   async function login() {
     if (!sdkRef.current) {
       const socialLoginSDK = new SocialLogin()
       const signature2 = await socialLoginSDK.whitelistUrl("http://localhost:3000/")
+      const signature1 = await socialLoginSDK.whitelistUrl("https://aaboard.vercel.app")
       await socialLoginSDK.init({
         chainId: ethers.utils.hexValue(ChainId.POLYGON_MUMBAI).toString(),
         network: "testnet",
         whitelistUrls: {
           "http://localhost:3000/": signature2,
+          "https://aaboard.vercel.app": signature1,
         },
       })
       await socialLoginSDK.init()
@@ -197,7 +197,7 @@ function App() {
         <p className="text-md m-10 text-center ">
           This is a message board dApp powered by Account Abstraction <br />
           <br /> Login to send an anonymous message and view other messages as well! <br /> This dApp uses Gasless txns
-          so you don't need to worry about any gas fees!
+          so you dont need to worry about any gas fees!
         </p>
         {!smartAccount && !loading && (
           <button className="btn" onClick={login}>
