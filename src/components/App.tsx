@@ -16,6 +16,7 @@ function App() {
   const [provider, setProvider] = useState<any>(null)
   const [message, setMessage] = useState<string>("")
   const [contract, setContract] = useState<any>(null)
+  const [allMessages, setAllMessages] = useState<string[]>([])
 
   useEffect(() => {
     let configureLogin: any
@@ -34,10 +35,6 @@ function App() {
       getMessages()
     }
   }, [provider])
-
-  useEffect(() => {
-    console.log({ message })
-  }, [message])
 
   async function login() {
     if (!sdkRef.current) {
@@ -120,7 +117,7 @@ function App() {
         progress: undefined,
         theme: "dark",
       })
-      const contract = new ethers.Contract(msgBoardContract, msgBoardABI, provider)
+      // const contract = new ethers.Contract(msgBoardContract, msgBoardABI, provider)
       console.log(contract)
       const addMsgTx = await contract.populateTransaction.addMessage(message)
       const tx1 = {
@@ -165,14 +162,12 @@ function App() {
     const contract = new ethers.Contract(msgBoardContract, msgBoardABI, tempProvider)
     // console.log("msgcontract=>", msgcontract)
 
-    // setContract(msgcontract)
-    console.log("contract=>", contract)
-    console.log(await contract.getMessageCount())
-    console.log(await contract.getMessageByIndex(1))
+    setContract(contract)
 
-    const messages = await contract.getAllMessages()
-
+    let messages = await contract.getAllMessages()
     console.log(messages)
+    messages = [...messages].reverse()
+    setAllMessages(messages)
   }
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value)
@@ -193,7 +188,6 @@ function App() {
       />
       <div className="flex flex-col bg-fbox m-16 rounded-lg min-h-full justify-center items-center py-8">
         <h1 className="text-5xl font-bold">Message board dApp</h1>
-        <button onClick={getMessages}>Get all messages</button>
         <p className="text-md my-10">This is a message board dApp powered by Account Abstraction</p>
         {!smartAccount && !loading && (
           <button className="p-4 m-4 bg-forange" onClick={login}>
@@ -228,14 +222,19 @@ function App() {
             Send
           </button>
         </div>
-        <div className="bg-fmsg p-4 mt-14 w-1/2">
-          <p className="text-md">Messages:</p>
-          <ul className="list-disc list-inside">
-            <li>Message 1</li>
-            <li>Message 2</li>
-            <li>Message 3</li>
-          </ul>
-        </div>
+
+        {!!allMessages && (
+          <div className="bg-fmsg p-4 mt-14 w-1/2 rounded-md">
+            <h2 className="text-center text-xl"> All Messages</h2>
+
+            {allMessages.map((msg, key) => (
+              <div key={key} className="text-md border-forange border-b-2 my-2 py-2">
+                {msg}
+                <br className=" " />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
