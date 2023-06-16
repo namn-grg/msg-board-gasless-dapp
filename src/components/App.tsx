@@ -158,19 +158,15 @@ function App() {
     }
   }
 
-  // const sendMessage = async () => {
-  //   loading ? setLoading(false) : setLoading(true)
-  // }
   const getMessages = async () => {
     console.log(provider)
     const tempProvider = new ethers.providers.JsonRpcProvider("https://mumbai.rpc.thirdweb.com")
     const contract = new ethers.Contract(msgBoardContract, msgBoardABI, tempProvider)
-    // console.log("msgcontract=>", msgcontract)
 
     setContract(contract)
 
     let messages = await contract.getAllMessages()
-    console.log(messages)
+
     messages = [...messages].reverse()
     setAllMessages(messages)
   }
@@ -192,7 +188,6 @@ function App() {
         theme="dark"
       />
       <div className="flex flex-col bg-fbox m-16 rounded-lg min-h-full justify-center items-center py-8">
-        {/* <div className=" absolute z-10 x-2">Test</div> */}
         <h1 className="text-5xl font-bold">Message board dApp</h1>
         <p className="text-md m-10 text-center ">
           This is a message board dApp powered by Account Abstraction <br />
