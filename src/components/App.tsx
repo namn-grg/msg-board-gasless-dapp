@@ -7,6 +7,7 @@ import { msgBoardContract, msgBoardABI } from "../../utils"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Spinner from "./Spinner"
+import Head from "next/head"
 
 function App() {
   const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
@@ -47,7 +48,6 @@ function App() {
           "https://aaboard.vercel.app": signature1,
         },
       })
-      await socialLoginSDK.init()
       console.log("socialLoginSDK =>", socialLoginSDK)
 
       sdkRef.current = socialLoginSDK
@@ -174,81 +174,89 @@ function App() {
     setMessage(event.target.value)
   }
   return (
-    <div className="bg-fbg border- h-screen overflow-scroll">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-      <div className="flex flex-col bg-fbox m-16 rounded-lg min-h-full justify-center items-center py-8">
-        <h1 className="text-5xl font-bold">Message board dApp</h1>
-        <p className="text-md m-10 text-center ">
-          This is a message board dApp powered by Account Abstraction <br />
-          <br /> Login to send an anonymous message and view other messages as well! <br /> This dApp uses Gasless txns
-          so you dont need to worry about any gas fees!
-        </p>
-        {!smartAccount && !loading && (
-          <button className="btn" onClick={login}>
-            Login
-          </button>
-        )}
-        {!smartAccount && loading && (
-          <div>
-            <p>Creating your Smart Account...</p>
-            <Spinner />
-          </div>
-        )}
-        {!!smartAccount && (
-          <>
-            <div className="">
-              <h3>Smart account address : {smartAccount.address}</h3>
-            </div>
-
-            <div className="flex flex-row w-full justify-center">
-              {loading ? (
-                <Spinner />
-              ) : (
-                <>
-                  <input
-                    className="border-2 rounded-md p-2 bg-black mx-4 w-1/2 mt-2"
-                    type="text"
-                    placeholder="Enter your message"
-                    value={message}
-                    onChange={handleChange}
-                  />
-
-                  <button className="rounded-lg bg-forange text-white px-4 hover:bg-orange-600" onClick={sendMessage}>
-                    Send
-                  </button>
-                </>
-              )}
-            </div>
-            <button className="btn mt-4" onClick={logout}>
-              Logout
+    <>
+      <Head>
+        <title>Message Board dApp</title>
+        <meta name="description" content="Next.js + TailwindCSS + Typescript + Biconomy" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="bg-fbg border- h-screen overflow-scroll">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={true}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
+        <div className="flex flex-col bg-fbox m-16 rounded-lg min-h-full justify-center items-center py-8">
+          <h1 className="text-5xl font-bold">Message board dApp</h1>
+          <p className="text-md m-10 text-center ">
+            This is a message board dApp powered by Account Abstraction <br />
+            <br /> Login to send an anonymous message and view other messages as well! <br /> This dApp uses Gasless
+            txns so you dont need to worry about any gas fees!
+          </p>
+          {!smartAccount && !loading && (
+            <button className="btn" onClick={login}>
+              Login
             </button>
-            {!!allMessages && (
-              <div className="bg-fmsg p-4 mt-8 w-1/2 rounded-md">
-                <h2 className="text-center text-xl"> All Messages</h2>
-
-                {allMessages.map((msg, key) => (
-                  <div key={key} className="text-md border-forange border-b-2 py-2">
-                    {msg}
-                    <br className=" " />
-                  </div>
-                ))}
+          )}
+          {!smartAccount && loading && (
+            <div>
+              <p>Creating your Smart Account...</p>
+              <Spinner />
+            </div>
+          )}
+          {!!smartAccount && (
+            <>
+              <div className="">
+                <h3>Smart account address : {smartAccount.address}</h3>
               </div>
-            )}
-          </>
-        )}
+
+              <div className="flex flex-row w-full justify-center">
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <input
+                      className="border-2 rounded-md p-2 bg-black mx-4 w-1/2 mt-2"
+                      type="text"
+                      placeholder="Enter your message"
+                      value={message}
+                      onChange={handleChange}
+                    />
+
+                    <button className="rounded-lg bg-forange text-white px-4 hover:bg-orange-600" onClick={sendMessage}>
+                      Send
+                    </button>
+                  </>
+                )}
+              </div>
+              <button className="btn mt-4" onClick={logout}>
+                Logout
+              </button>
+              {!!allMessages && (
+                <div className="bg-fmsg p-4 mt-8 w-1/2 rounded-md">
+                  <h2 className="text-center text-xl"> All Messages</h2>
+
+                  {allMessages.map((msg, key) => (
+                    <div key={key} className="text-md border-forange border-b-2 py-2">
+                      {msg}
+                      <br className=" " />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
