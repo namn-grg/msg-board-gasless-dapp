@@ -6,7 +6,7 @@ import SmartAccount from "@biconomy/smart-account"
 import { msgBoardContract, msgBoardABI } from "../../utils"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Minter from "./Minter"
+import Spinner from "./Spinner"
 
 function App() {
   const [smartAccount, setSmartAccount] = useState<SmartAccount | null>(null)
@@ -107,7 +107,8 @@ function App() {
 
   const sendMessage = async () => {
     try {
-      const infoToast = toast.info("Sending your anon message...", {
+      setLoading(true)
+      const infoToast = toast.info("Sending your anonymous message...", {
         position: "top-right",
         autoClose: 25000,
         hideProgressBar: false,
@@ -117,7 +118,6 @@ function App() {
         progress: undefined,
         theme: "dark",
       })
-      // const contract = new ethers.Contract(msgBoardContract, msgBoardABI, provider)
       console.log(contract)
       const addMsgTx = await contract.populateTransaction.addMessage(message)
       const tx1 = {
@@ -141,14 +141,16 @@ function App() {
         progress: undefined,
         theme: "dark",
       })
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.log(error)
-      toast.error("error occured check the console", {
+      toast.error("Error occured check the console", {
         position: "top-right",
         autoClose: 25000,
         hideProgressBar: false,
         closeOnClick: true,
-        pauseOnHover: true,
+        pauseOnHover: false,
         draggable: true,
         progress: undefined,
         theme: "dark",
@@ -156,6 +158,9 @@ function App() {
     }
   }
 
+  // const sendMessage = async () => {
+  //   loading ? setLoading(false) : setLoading(true)
+  // }
   const getMessages = async () => {
     console.log(provider)
     const tempProvider = new ethers.providers.JsonRpcProvider("https://mumbai.rpc.thirdweb.com")
@@ -173,7 +178,7 @@ function App() {
     setMessage(event.target.value)
   }
   return (
-    <div className="bg-fbg border- h-screen overflow-hidden">
+    <div className="bg-fbg border- h-screen overflow-scroll">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -187,53 +192,65 @@ function App() {
         theme="dark"
       />
       <div className="flex flex-col bg-fbox m-16 rounded-lg min-h-full justify-center items-center py-8">
+        {/* <div className=" absolute z-10 x-2">Test</div> */}
         <h1 className="text-5xl font-bold">Message board dApp</h1>
-        <p className="text-md my-10">This is a message board dApp powered by Account Abstraction</p>
+        <p className="text-md m-10 text-center ">
+          This is a message board dApp powered by Account Abstraction <br />
+          <br /> Login to send an anonymous message and view other messages as well! <br /> This dApp uses Gasless txns
+          so you don't need to worry about any gas fees!
+        </p>
         {!smartAccount && !loading && (
-          <button className="p-4 m-4 bg-forange" onClick={login}>
+          <button className="btn" onClick={login}>
             Login
           </button>
         )}
-        {loading && (
+        {!smartAccount && loading && (
           <div>
             <p>Creating your Smart Account...</p>
-            {/* <Spinner /> */}
+            <Spinner />
           </div>
         )}
         {!!smartAccount && (
-          <div className="">
-            <h3>Smart account address:</h3>
-            <p>{smartAccount.address}</p>
-            {/* <Minter smartAccount={smartAccount} provider={provider} loading={loading} /> */}
-            <button className="" onClick={logout}>
+          <>
+            <div className="">
+              <h3>Smart account address : {smartAccount.address}</h3>
+            </div>
+
+            <div className="flex flex-row w-full justify-center">
+              {loading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <input
+                    className="border-2 rounded-md p-2 bg-black mx-4 w-1/2 mt-2"
+                    type="text"
+                    placeholder="Enter your message"
+                    value={message}
+                    onChange={handleChange}
+                  />
+
+                  <button className="rounded-lg bg-forange text-white px-4 hover:bg-orange-600" onClick={sendMessage}>
+                    Send
+                  </button>
+                </>
+              )}
+            </div>
+            <button className="btn mt-4" onClick={logout}>
               Logout
             </button>
-          </div>
-        )}
-        <div className="flex flex-row w-full justify-center">
-          <input
-            className="border-2 rounded-md p-2 bg-black mx-4 w-1/2"
-            type="text"
-            placeholder="Enter your message"
-            value={message}
-            onChange={handleChange}
-          />
-          <button className="rounded-lg bg-forange text-white px-4 hover:bg-orange-600" onClick={sendMessage}>
-            Send
-          </button>
-        </div>
+            {!!allMessages && (
+              <div className="bg-fmsg p-4 mt-8 w-1/2 rounded-md">
+                <h2 className="text-center text-xl"> All Messages</h2>
 
-        {!!allMessages && (
-          <div className="bg-fmsg p-4 mt-14 w-1/2 rounded-md">
-            <h2 className="text-center text-xl"> All Messages</h2>
-
-            {allMessages.map((msg, key) => (
-              <div key={key} className="text-md border-forange border-b-2 my-2 py-2">
-                {msg}
-                <br className=" " />
+                {allMessages.map((msg, key) => (
+                  <div key={key} className="text-md border-forange border-b-2 py-2">
+                    {msg}
+                    <br className=" " />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -29,3 +29,7 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.btn {
+  @apply font-bold px-4 py-2 bg-forange text-white rounded-md;
+}
