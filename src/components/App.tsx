@@ -83,7 +83,7 @@ function App() {
       console.log({ deployed: await smartAccount.isDeployed(ChainId.POLYGON_MUMBAI) })
       const isDeployed = await smartAccount.isDeployed(ChainId.POLYGON_MUMBAI)
       if (isDeployed == false) {
-        console.log("this one needs to be deployed")
+        console.log("Not deployed, deploying now...")
         const deployTx = await smartAccount.deployWalletUsingPaymaster()
         console.log(deployTx)
       }
@@ -108,6 +108,8 @@ function App() {
   const sendMessage = async () => {
     try {
       setLoading(true)
+
+      // Using react toastify to show a "sending" toast
       const infoToast = toast.info("Sending your anonymous message...", {
         position: "top-right",
         autoClose: 25000,
@@ -118,12 +120,17 @@ function App() {
         progress: undefined,
         theme: "dark",
       })
-      console.log(contract)
+
+      // Get the "addMessage" function from the contract
       const addMsgTx = await contract.populateTransaction.addMessage(message)
+
+      // Create a transaction object
       const tx1 = {
         to: msgBoardContract,
         data: addMsgTx.data,
       }
+
+      // Send the dApp paid transaction using Biconomy smart account
       const txResponse = await smartAccount?.sendTransaction({ transaction: tx1 })
 
       const txHash = await txResponse?.wait()
@@ -170,9 +177,11 @@ function App() {
     messages = [...messages].reverse()
     setAllMessages(messages)
   }
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value)
   }
+
   return (
     <>
       <Head>
